@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: es-cluster
+  name: es
+  labels:
+    app: es-cluster
+spec:
+  selector:
+    matchLabels:
+      app: es-node
+  serviceName: es-svc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: es-node
+    spec:
+      containers:
+        - name: es-node
+          image: elasticsearch:7.9.1
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: tcp
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: es-data
+            - mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              name: es-config
+              subPath: elasticsearch.yml
+              readOnly: true
+            - mountPath: /usr/share/elasticsearch/config/logging.yml
+              name: es-config
+              subPath: logging.yml
+              readOnly: true
+            - mountPath: /usr/share/elasticsearch/config/elasticsearch.in.sh
+              name: es-config
+              subPath: elasticsearch.in.sh
+              readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 500Mi
+            limits:
+              cpu: 100m
+              memory: 500Mi
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      initContainers:
+        - image: busybox:1.28
+          name: volume-create
+          command:
+            - mkdir
+            - -p
+            - /usr/share/elasticsearch/data/nodes/
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: es-data
+              mountPath: /usr/share/elasticsearch/data
+        - image: busybox:1.28
+          name: volume-init
+          command:
+            - chown
+            - -R
+            - 1000:1000
+            - /usr/share/elasticsearch/
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: es-data
+              mountPath: /usr/share/elasticsearch/data
+      volumes:
+        - name: es-config
+          configMap:
+            name: es-config
+            items:
+              - key: elasticsearch.yml
+                path: elasticsearch.yml
+              - key: logging.yml
+                path: logging.yml
+              - key: elasticsearch.yml
+                path: elasticsearch.yml
+  volumeClaimTemplates:
+    - metadata:
+        name: es-data
+      spec:
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: hostpath
+        accessModes:
+          - ReadWriteOnce
