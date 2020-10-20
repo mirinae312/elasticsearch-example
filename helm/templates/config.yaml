@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: es-cluster
+{{/*  namespace: es-cluster*/}}
   name: es-config
 data:
   elasticsearch.yml: |
@@ -10,4 +10,4 @@ data:
     rootLogger: TRACE, console, file
   elasticsearch.in.sh: |
     #!/bin/sh
-    ES_HEAP_SIZE=500m
+    ES_HEAP_SIZE=1g

@@ -1,28 +1,30 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: es-cluster
+{{/*  namespace: es-cluster*/}}
   name: es
   labels:
     app: es-cluster
 spec:
   selector:
     matchLabels:
-      app: es-node
+      app: es-pod
   serviceName: es-svc
   replicas: 2
   template:
     metadata:
       labels:
-        app: es-node
+        app: es-pod
     spec:
       containers:
-        - name: es-node
+        - name: es-pod
           image: elasticsearch:7.9.1
           ports:
             - containerPort: 9200
+              protocol: TCP
               name: http
             - containerPort: 9300
+              protocol: TCP
               name: tcp
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
@@ -42,10 +44,10 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 500Mi
+              memory: 1.5Gi
             limits:
               cpu: 100m
-              memory: 500Mi
+              memory: 1.5Gi
       securityContext:
         runAsUser: 1000
         fsGroup: 1000

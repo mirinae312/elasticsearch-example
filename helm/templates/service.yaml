@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+{{/*  namespace: es-cluster*/}}
+  name: es
+  labels:
+    app: es-svc
+spec:
+  clusterIP: None
+  selector:
+    app: es-pod
+  ports:
+    - port: 9200
+      targetPort: 9200
