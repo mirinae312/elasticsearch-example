@@ -1,13 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-{{/*  namespace: es-cluster*/}}
   name: es-config
 data:
   elasticsearch.yml: |
     cluster.name: es-cluster
+{{/*    discovery.zen.ping.unicast.hosts: es-0, es-1*/}}
+{{/*    discovery.zen.minimum_master_nodes: 2*/}}
   logging.yml: |
     rootLogger: TRACE, console, file
   elasticsearch.in.sh: |
     #!/bin/sh
-    ES_HEAP_SIZE=1g
+    ES_HEAP_SIZE=1.5g

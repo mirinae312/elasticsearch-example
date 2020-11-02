@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-{{/*  namespace: es-cluster*/}}
   name: es
   labels:
     app: es-cluster
@@ -18,14 +17,14 @@ spec:
     spec:
       containers:
         - name: es-pod
-          image: elasticsearch:7.9.1
+          image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.3
           ports:
             - containerPort: 9200
               protocol: TCP
-              name: http
+              name: rest
             - containerPort: 9300
               protocol: TCP
-              name: tcp
+              name: inter-node
           volumeMounts:
             - mountPath: /usr/share/elasticsearch/data
               name: es-data
@@ -43,11 +42,20 @@ spec:
               readOnly: true
           resources:
             requests:
-              cpu: 100m
-              memory: 1.5Gi
+              cpu: 500m
+              memory: 2Gi
             limits:
-              cpu: 100m
-              memory: 1.5Gi
+              cpu: 500m
+              memory: 2Gi
+          env:
+            - name: node.name
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: discovery.zen.ping.unicast.hosts
+              value: "es-0.es-svc,es-1.es-svc"
+            - name: discovery.zen.minimum_master_nodes
+              value: "2"
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
