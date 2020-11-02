@@ -29,17 +29,25 @@ spec:
               name: inter-node
               protocol: TCP
           volumeMounts:
-            - name: data
+            - name: es-data
               mountPath: /usr/share/elasticsearch/data
+            - name: es-config
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              subPath: elasticsearch.yml
+              readOnly: true
+            - name: es-config
+              mountPath: /usr/share/elasticsearch/config/logging.yml
+              subPath: logging.yml
+              readOnly: true
+            - name: es-config
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.in.sh
+              subPath: elasticsearch.in.sh
+              readOnly: true
           env:
             - name: node.name
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: discovery.seed_hosts
-              value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
-            - name: cluster.initial_master_nodes
-              value: "es-cluster-0,es-cluster-1,es-cluster-2"
       initContainers:
         - name: fix-permissions
           image: busybox
@@ -47,7 +55,7 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
-            - name: data
+            - name: es-data
               mountPath: /usr/share/elasticsearch/data
         - name: increase-vm-max-map
           image: busybox
@@ -59,9 +67,20 @@ spec:
           command: ["sh", "-c", "ulimit -n 65536"]
           securityContext:
             privileged: true
+      volumes:
+        - name: es-config
+          configMap:
+            name: es-config
+            items:
+              - key: elasticsearch.yml
+                path: elasticsearch.yml
+              - key: logging.yml
+                path: logging.yml
+              - key: elasticsearch.yml
+                path: elasticsearch.yml
   volumeClaimTemplates:
     - metadata:
-        name: data
+        name: es-data
         labels:
           app: elasticsearch
       spec:

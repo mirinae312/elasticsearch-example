@@ -5,8 +5,9 @@ metadata:
 data:
   elasticsearch.yml: |
     cluster.name: es-cluster
-{{/*    discovery.zen.ping.unicast.hosts: es-0, es-1*/}}
-{{/*    discovery.zen.minimum_master_nodes: 2*/}}
+    network.host: 0.0.0.0
+    discovery.seed_hosts: ["es-cluster-0.elasticsearch", "es-cluster-1.elasticsearch", "es-cluster-2.elasticsearch"]
+    cluster.initial_master_nodes: ["es-cluster-0", "es-cluster-1", "es-cluster-2"]
   logging.yml: |
     rootLogger: TRACE, console, file
   elasticsearch.in.sh: |
