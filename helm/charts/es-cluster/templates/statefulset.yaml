@@ -3,18 +3,18 @@ kind: StatefulSet
 metadata:
   name: es-cluster
 spec:
-  serviceName: elasticsearch
+  serviceName: es-cluster
   replicas: 3
   selector:
     matchLabels:
-      app: elasticsearch
+      app: es-cluster
   template:
     metadata:
       labels:
-        app: elasticsearch
+        app: es-cluster
     spec:
       containers:
-        - name: elasticsearch
+        - name: es-cluster
           image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.3
           resources:
             limits:
@@ -23,12 +23,14 @@ spec:
               cpu: 300m
           ports:
             - containerPort: 9200
-              name: rest
+              name: es-rest
               protocol: TCP
             - containerPort: 9300
-              name: inter-node
+              name: es-inter-node
               protocol: TCP
           volumeMounts:
+            - name: host-volume
+              mountPath: /es
             - name: es-data
               mountPath: /usr/share/elasticsearch/data
             - name: es-config
@@ -78,6 +80,10 @@ spec:
                 path: logging.yml
               - key: elasticsearch.yml
                 path: elasticsearch.yml
+        - name: host-volume
+          hostPath:
+            path: /Users/juno/Documents/tmp/docker-for-desktop/es  # docker-for-desktop 에 file-sharing 설정된 경로
+            type: Directory
   volumeClaimTemplates:
     - metadata:
         name: es-data

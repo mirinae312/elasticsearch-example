@@ -6,8 +6,9 @@ data:
   elasticsearch.yml: |
     cluster.name: es-cluster
     network.host: 0.0.0.0
-    discovery.seed_hosts: ["es-cluster-0.elasticsearch", "es-cluster-1.elasticsearch", "es-cluster-2.elasticsearch"]
+    discovery.seed_hosts: ["es-cluster-0.es-cluster", "es-cluster-1.es-cluster", "es-cluster-2.es-cluster"]
     cluster.initial_master_nodes: ["es-cluster-0", "es-cluster-1", "es-cluster-2"]
+    path.repo: ["/es/book_backup/search_example", "/es/book_backup/agg_example"]
   logging.yml: |
     rootLogger: TRACE, console, file
   elasticsearch.in.sh: |

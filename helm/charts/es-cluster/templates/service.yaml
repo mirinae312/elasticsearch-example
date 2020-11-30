@@ -1,15 +1,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: elasticsearch
+  name: es-cluster
   labels:
-    app: elasticsearch
+    app: es-cluster
 spec:
   selector:
-    app: elasticsearch
+    app: es-cluster
   clusterIP: None
   ports:
     - port: 9200
-      name: rest
+      name: es-rest
     - port: 9300
-      name: inter-node
+      name: es-inter-node

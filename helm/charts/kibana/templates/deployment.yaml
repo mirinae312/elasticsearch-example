@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana-oss:7.9.3
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 300m
+          ports:
+            - containerPort: 5601
+              name: kibana
+              protocol: TCP
+          volumeMounts:
+            - name: kibana-config
+              mountPath: /usr/share/kibana/config/kibana.yml
+              subPath: kibana.yml
+              readOnly: true
+      volumes:
+        - name: kibana-config
+          configMap:
+            name: kibana-config
+            items:
+              - key: kibana.yml
+                path: kibana.yml
