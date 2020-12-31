@@ -2,8 +2,6 @@
 helm install elasticsearch .
 
 # es 구동에 15분 정도 걸림 
-
-kubectl port-forward es-cluster-0 9200:9200
 kubectl port-forward --address localhost service/es-cluster 9200:9200
 kubectl port-forward --address localhost service/kibana 5601:5601
 
